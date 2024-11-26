@@ -38,5 +38,5 @@ if __name__ == "__main__":
 
     # Load and predict
     model = load_model(get_model(), 'airglow_model.pth')
-    print(predict_airglow(model, 'data\PokerFlat_2016_08_11\PKR_DASC_0428_20160811_074605.203.FITS', device))
-    print(predict_airglow(model, 'data\PokerFlat_2016_08_11\PKR_DASC_0428_20160811_074707.923.FITS', device))
+    print(predict_airglow(model, 'data\PokerFlat_2016_08_11\PKR_DASC_0428_20160811_074552.595.FITS', device))
+    print(predict_airglow(model, 'data\PokerFlat_2016_02_17\PKR_DASC_0428_20160217_031744.956.FITS', device))

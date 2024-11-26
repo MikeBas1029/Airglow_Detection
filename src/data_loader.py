@@ -19,7 +19,12 @@ class FITSDataset(Dataset):
         image_data = hdul[0].data
         hdul.close()
 
-        image_data = (image_data - np.min(image_data)) / (np.max(image_data) - np.min(image_data))
+        # Avoid divide-by-zero errors
+        data_min, data_max = np.min(image_data), np.max(image_data)
+        if data_max > data_min:  # Valid range
+            image_data = (image_data - data_min) / (data_max - data_min)
+        else:
+            image_data = np.zeros_like(image_data)  # Default to all zeros if range is invalid
 
         if self.transform:
             image_data = self.transform(image_data)

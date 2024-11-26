@@ -1,8 +1,9 @@
 import torch.nn as nn
-from torchvision.models import resnet50
+from torchvision.models import resnet50, ResNet50_Weights
 
 def get_model():
-    model = resnet50(pretrained=True)
+    weights = ResNet50_Weights.IMAGENET1K_V1
+    model = resnet50(weights=weights)
     model.fc = nn.Sequential(
         nn.Linear(model.fc.in_features, 1),
         nn.Sigmoid()
