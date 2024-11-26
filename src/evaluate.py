@@ -1,3 +1,6 @@
+import torch
+import numpy as np
+
 def evaluate_model(model, dataloader, device):
     model.eval()
     correct = 0

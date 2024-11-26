@@ -12,7 +12,7 @@ import torch.optim as optim
 
 if __name__ == "__main__":
     # File paths and labels
-    file_paths = ['data/airglow1.fits', 'data/no_airglow1.fits']
+    file_paths = ['data\PokerFlat_2016_02_17\PKR_DASC_0428_20160217_031732.392.FITS', 'data\PokerFlat_2016_08_11\PKR_DASC_0428_20160811_074552.595.FITS']
     labels = [1, 0]
 
     # Dataset and DataLoader
@@ -38,4 +38,5 @@ if __name__ == "__main__":
 
     # Load and predict
     model = load_model(get_model(), 'airglow_model.pth')
-    print(predict_airglow(model, 'data/new_image.fits', device))
+    print(predict_airglow(model, 'data\PokerFlat_2016_08_11\PKR_DASC_0428_20160811_074605.203.FITS', device))
+    print(predict_airglow(model, 'data\PokerFlat_2016_08_11\PKR_DASC_0428_20160811_074707.923.FITS', device))
