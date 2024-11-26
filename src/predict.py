@@ -1,5 +1,6 @@
 import torch
-from preprocess import preprocess_fits
+import numpy as np
+from .preprocess import preprocess_fits
 from astropy.io import fits
 
 def predict_airglow(model, file_path, device):
