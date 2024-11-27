@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 
 def preprocess_fits(image_data):
+    image_data = np.nan_to_num(image_data, nan=0.0, posinf=0.0, neginf=0.0)
     image = Image.fromarray((image_data * 255).astype(np.uint8))
     transform = transforms.Compose([
         transforms.Resize((224, 224)),

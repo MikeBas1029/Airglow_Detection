@@ -10,8 +10,13 @@ def predict_airglow(model, file_path, device):
     image_data = hdul[0].data
     hdul.close()
 
-    image_data = preprocess_fits((image_data - np.min(image_data)) / (np.max(image_data) - np.min(image_data)))
-    image_data = image_data.unsqueeze(0).to(device)
+    image_data = np.nan_to_num(image_data, nan=0.0, posinf=0.0, neginf=0.0)
+    if np.max(image_data) != np.min(image_data):
+        image_data = (image_data - np.min(image_data)) / (np.max(image_data) - np.min(image_data))
+    else:
+        image_data = np.zeros_like(image_data)
+
+    image_data = preprocess_fits(image_data).unsqueeze(0).to(device)
 
     with torch.no_grad():
         output = model(image_data)
