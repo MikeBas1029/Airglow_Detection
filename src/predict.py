@@ -34,3 +34,6 @@ def predict_airglow(model, folder_path, device):
 
             # Store the result
             results[file_name] = 'Airglow Present' if prediction == 1 else 'No Airglow'
+
+    # Return the results dictionary
+    return results
