@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-def train_model(model, dataloader, criterion, optimizer, device, num_epochs=50):
+def train_model(model, dataloader, criterion, optimizer, device, num_epochs=10):
     model.to(device)
 
     for epoch in range(num_epochs):

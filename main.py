@@ -1,4 +1,5 @@
 import torch
+import os
 from src.data_loader import FITSDataset
 from src.preprocess import preprocess_fits
 from src.model import get_model
@@ -11,12 +12,14 @@ import torch.nn as nn
 import torch.optim as optim
 
 if __name__ == "__main__":
-    # File paths and labels
-    file_paths = ['data/PokerFlat_2016_02_17/PKR_DASC_0428_20160217_032028.581.FITS',
-                  'data/PokerFlat_2016_08_11/PKR_DASC_0428_20160811_074552.595.FITS']
+    # Directory containing FITS files
     folder_path = 'data/PokerFlat_2018_01_20'
 
-    labels = [1, 0]
+    # Get all FITS files in the directory
+    file_paths = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(".FITS")]
+
+    # Generate dummy labels (e.g., all zeros since labels are unknown during prediction)
+    labels = [0] * len(file_paths)
 
     # Dataset and DataLoader
     dataset = FITSDataset(file_paths, labels, transform=preprocess_fits)
@@ -31,7 +34,7 @@ if __name__ == "__main__":
     optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
 
     # Training
-    train_model(model, dataloader, criterion, optimizer, device, num_epochs=50)
+    train_model(model, dataloader, criterion, optimizer, device, num_epochs=10)
 
     # Evaluation
     evaluate_model(model, dataloader, device)
@@ -41,10 +44,8 @@ if __name__ == "__main__":
 
     # Load and predict
     model = load_model(get_model(), 'airglow_model.pth')
-    #print(predict_airglow(model, 'data/PokerFlat_2016_02_17/PKR_DASC_0428_20160217_031732.392.FITS', device))
-    #print(predict_airglow(model, 'data/PokerFlat_2016_08_11/PKR_DASC_0428_20160811_074552.595.FITS', device))
-
     predictions = predict_airglow(model, folder_path, device)
+
     # Print predictions for all images in the folder
     for filename, prediction in predictions.items():
         print(f'{filename}: {prediction}')
