@@ -2,15 +2,17 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-def train_model(model, dataloader, criterion, optimizer, device, num_epochs=10):
+def train_model(model, train_loader, val_loader, criterion, optimizer, device, num_epochs=10):
     model.to(device)
+    train_losses = []
+    val_losses = []
 
     for epoch in range(num_epochs):
         model.train()
         running_loss = 0.0
 
         # Training Loop
-        for images, labels in tqdm(dataloader, desc=f"Epoch {epoch+1}/{num_epochs}"):
+        for images, labels in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}"):
             images, labels = images.to(device), labels.to(device).float().unsqueeze(1)
 
             optimizer.zero_grad()
@@ -21,14 +23,14 @@ def train_model(model, dataloader, criterion, optimizer, device, num_epochs=10):
 
             running_loss += loss.item()
 
-        avg_train_loss = running_loss / len(dataloader)
-        print(f"Training Loss: {avg_train_loss:.4f}")
+        avg_train_loss = running_loss / len(train_loader)
+        train_losses.append(avg_train_loss)
 
-        # Validation Loop (Optional, can improve monitoring)
+        # Validation Loop
         model.eval()
         val_loss = 0.0
-        with torch.no_grad():  # No gradient calculation during validation
-            for images, labels in dataloader:
+        with torch.no_grad():
+            for images, labels in val_loader:
                 images, labels = images.to(device), labels.to(device).float().unsqueeze(1)
 
                 outputs = model(images)
@@ -36,8 +38,9 @@ def train_model(model, dataloader, criterion, optimizer, device, num_epochs=10):
 
                 val_loss += loss.item()
 
-        avg_val_loss = val_loss / len(dataloader)
-        print(f"Validation Loss: {avg_val_loss:.4f}")
+        avg_val_loss = val_loss / len(val_loader)
+        val_losses.append(avg_val_loss)
 
+        print(f"Epoch {epoch+1}/{num_epochs}, Training Loss: {avg_train_loss:.4f}, Validation Loss: {avg_val_loss:.4f}")
 
-    print("Training complete.")
+    return train_losses, val_losses
