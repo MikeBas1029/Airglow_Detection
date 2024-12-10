@@ -6,37 +6,52 @@ from src.train import train_model
 from src.evaluate import evaluate_model
 from src.predict import predict_airglow
 from src.utils import save_model, load_model
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 import torch.nn as nn
 import torch.optim as optim
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     # File paths and labels
-    file_paths = ['data\PokerFlat_2016_02_17\PKR_DASC_0428_20160217_031732.392.FITS', 'data\PokerFlat_2016_08_11\PKR_DASC_0428_20160811_074552.595.FITS']
-    labels = [1, 0]
+    '''
+    folder_path = 'data/Present&None'
 
     # Dataset and DataLoader
-    dataset = FITSDataset(file_paths, labels, transform=preprocess_fits)
-    dataloader = DataLoader(dataset, batch_size=4, shuffle=True)
+    dataset = FITSDataset(folder_path, transform=preprocess_fits)
+
+    train_size = int(0.8 * len(dataset))
+    val_size = len(dataset) - train_size
+    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+
+    train_dataloader = DataLoader(train_dataset, batch_size=4, shuffle=True)
+    val_dataloader = DataLoader(val_dataset, batch_size=4, shuffle=False)
 
     # Model
-    model = get_model()
+    model = get_model(dropout_prob=0.5)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.to(device)
 
     # Loss and Optimizer
     criterion = nn.BCELoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
 
     # Training
-    train_model(model, dataloader, criterion, optimizer, device, num_epochs=10)
+    train_model(model, train_dataloader, val_dataloader, criterion, optimizer, device, num_epochs=30)
 
     # Evaluation
-    evaluate_model(model, dataloader, device)
+    evaluate_model(model, val_dataloader, device, criterion)
 
     # Save the model
-    save_model(model, 'airglow_model.pth')
-
+    torch.save(model.state_dict(), 'airglow_model.pth')
+    '''
     # Load and predict
-    model = load_model(get_model(), 'airglow_model.pth')
-    print(predict_airglow(model, 'data\PokerFlat_2016_08_11\PKR_DASC_0428_20160811_074552.595.FITS', device))
-    print(predict_airglow(model, 'data\PokerFlat_2016_02_17\PKR_DASC_0428_20160217_031744.956.FITS', device))
+    model = get_model(dropout_prob=0.5)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.load_state_dict(torch.load('best_model.pth'))
+    model.to(device)
+
+    folder_path = 'data/PokerFlat_2017_02_01'
+    predictions = predict_airglow(model, folder_path, device)
+    # Print predictions for all images in the folder
+    for filename, prediction in predictions.items():
+        print(f'{filename}: {prediction}')
