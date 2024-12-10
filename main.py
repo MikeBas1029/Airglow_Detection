@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     # File paths and labels
-    '''
+    
     folder_path = 'data/Present&None'
 
     # Dataset and DataLoader
@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     # Save the model
     torch.save(model.state_dict(), 'airglow_model.pth')
-    '''
+    
     # Load and predict
     model = get_model(dropout_prob=0.5)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
